@@ -22,11 +22,10 @@ def main():
     df_train, df_test = train_test_splitter(df, 'Generation')
 
     #To separate the labels (the 'islegendary' category) from the rest of the data.
-    label = 'isLegendary'
-    train_data, train_labels, test_data, test_labels = label_delineator(df_train, df_test, label)
+    train_data, train_labels, test_data, test_labels = label_delineator(df_train, df_test, 'isLegendary')
 
-    print('Alles gut')
-    print(train_data[1])
+    #Normalize the data to values between 0 and 1
+    train_data, test_data = data_normalizer(train_data, test_data)
           
 def explore(df):
     print(f'Here are all the columns: {df.columns.values}')
@@ -42,6 +41,7 @@ def explore(df):
                   
 def dummy_creation(df,dummy_categories):
     for i in dummy_categories:
+        print(i)
         #create a dummy DataFrame of that category
         df_dummy = pd.get_dummies(df[i])
         #As it's a seperate DataFrame, we'll need to concatenate it to our original DataFrame
@@ -49,7 +49,7 @@ def dummy_creation(df,dummy_categories):
         #drop original column
         df = df.drop(i,axis=1)
 
-        return(df)
+    return(df)
 
 def train_test_splitter(df, column):
     #any Pokémon whose "Generation" label is equal to 1 goes into the test set
@@ -60,6 +60,11 @@ def train_test_splitter(df, column):
     df_test = df_test.drop(column, axis=1)
 
     return(df_train, df_test)
+
+def data_normalizer(train_data, test_data):
+    train_data = preprocessing.MinMaxScaler().fit_transform(train_data)
+    test_data = preprocessing.MinMaxScaler().fit_transform(test_data)
+    return(train_data, test_data)
 
 def label_delineator(df_train, df_test, label):
     
