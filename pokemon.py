@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing
 
 def main():
+    print('Preparing Data...')
     df = pd.read_csv('pokemon_alopez247.csv')
 
     df = df[['isLegendary','Generation', 'Type_1', 'Type_2', 'HP', 'Attack', 'Defense', 'Sp_Atk', 'Sp_Def', 'Speed','Color','Egg_Group_1','Height_m','Weight_kg','Body_Style']]
@@ -26,7 +27,14 @@ def main():
 
     #Normalize the data to values between 0 and 1
     train_data, test_data = data_normalizer(train_data, test_data)
-          
+
+    #Create model
+    print('Creating Model...')
+    model = create_model(train_data.shape[1])
+
+    #Have model fitting training data
+    model.fit(train_data, train_labels, epochs=400)
+
 def explore(df):
     print(f'Here are all the columns: {df.columns.values}')
 
@@ -73,7 +81,20 @@ def label_delineator(df_train, df_test, label):
     test_data = df_test.drop(label,axis=1).values
     test_labels = df_test[label].values
     return(train_data, train_labels, test_data, test_labels)
-                           
-if __name__== "__main__":
-  main()
 
+def create_model(input_size):
+    length = input_size
+
+    model = keras.Sequential()
+    model.add(keras.layers.Dense(500, activation='relu', input_shape=[length,]))
+    model.add(keras.layers.Dense(2, activation = 'softmax'))
+
+    model.compile(optimizer='sgd', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+    return model
+          
+
+
+                         
+if __name__== "__main__":
+    main()
