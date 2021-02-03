@@ -35,6 +35,13 @@ def main():
     #Have model fitting training data
     model.fit(train_data, train_labels, epochs=400)
 
+    #Test agains test data
+    loss_value, accuracy_value = model.evaluate(test_data, test_labels)
+    print(f'Our test accuracy was {accuracy_value}')
+
+    #Predict specific Pokémon
+    predictor(test_data,test_labels, 149, model) #Mewtwo is number 150 on the list of Pokemon
+
 def explore(df):
     print(f'Here are all the columns: {df.columns.values}')
 
@@ -92,6 +99,17 @@ def create_model(input_size):
     model.compile(optimizer='sgd', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     return model
+
+def predictor(test_data, test_labels, index, model):
+    prediction = model.predict(test_data)
+
+    if np.argmax(prediction[index]) == test_labels[index]:
+        print(f'This was correctly predicted to be a \"{test_labels[index]}\"!')
+    else:
+        print(f'This was incorrectly predicted to be a \"{np.argmax(prediction[index])}\". It was actually a \"{test_labels[index]}\".')
+
+    return(prediction)
+                 
           
 
 
